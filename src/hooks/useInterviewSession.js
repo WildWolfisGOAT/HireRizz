@@ -42,8 +42,38 @@ const useInterviewSession = () =>{
         const newMessages = [...updatedMessages,{role: "assistant", content: aiText}];
         setMessage(newMessages);
 
-        
-    })
+        setConversationLog((prev)=>[...prev,{
+            role : "assistant", text: aiText
+        }]);
+        setCurrentAIText(aiText);
+        setQuestionCount((prev)=> prev+1);
+        return aiTextl
+    },[sendMessages]);
+
+    const startInterview = useCallback(async(formData)=>{
+        const systemPrompt = buildSystemPrompt(formData);
+        const initialMessages = [
+            {
+                role : "system", content: systemPrompt
+            },
+            {
+                role : "user", content: "Hello,I'm ready for the interview."
+            },
+        ];
+
+        setPhase(PHASES.GREETING);
+        setMessage(initialMessages);
+
+        const aiText = await getAIResponse(initialMessages);
+
+        if(aiText){
+            setPhase(PHASES.ASKING);
+            shouldListenAfterSpeakRef.current= true;
+            speak(aiText);
+        }
+    },[getAIResponse,speak]);
+
+    
 
 
     
