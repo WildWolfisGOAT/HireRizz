@@ -3,7 +3,6 @@ import SetUpForm from "./components/SetUpForm";
 import InterviewRoom from "./components/InterviewRoom";
 
 const App = ()=>{
-    const [messages,setMessages] = useState([]);
     const [formData,setFormData] = useState(null);
     const [currentTab,setCurrentTab] = useState("setup");
 
