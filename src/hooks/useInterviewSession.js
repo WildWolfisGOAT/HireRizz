@@ -25,9 +25,19 @@ const useInterviewSession = () =>{
     const {startListening,stopListening,transcript,interimText,isListening,isSupported,error:micError} = useMicrophone();
 
     const shouldListenAfterSpeakRef = useRef(false);
+    const hasStartedRef = useRef(false);
+    const wasSpeakingRef = useRef(false);
 
     useEffect(()=>{
-        if(!isSpeaking && shouldListenAfterSpeakRef.current && phase === PHASES.ASKING){
+        if(isSpeaking){
+            wasSpeakingRef.current=true;
+        }
+    },[isSpeaking]);
+
+
+    useEffect(()=>{
+        if(!isSpeaking && wasSpeakingRef.current && shouldListenAfterSpeakRef.current && phase === PHASES.ASKING){
+            wasSpeakingRef.current = false;
             shouldListenAfterSpeakRef.current = false;
             setPhase(PHASES.LISTENING);
             startListening();
@@ -40,7 +50,7 @@ const useInterviewSession = () =>{
         if(!aiText) return null;
 
         const newMessages = [...updatedMessages,{role: "assistant", content: aiText}];
-        setMessage(newMessages);
+        setMessages(newMessages);
 
         setConversationLog((prev)=>[...prev,{
             role : "assistant", text: aiText
@@ -51,6 +61,10 @@ const useInterviewSession = () =>{
     },[sendMessages]);
 
     const startInterview = useCallback(async(formData)=>{
+
+        if (hasStartedRef.current) return;  
+        hasStartedRef.current = true;
+
         const systemPrompt = buildSystemPrompt(formData);
         const initialMessages = [
             {
@@ -62,7 +76,7 @@ const useInterviewSession = () =>{
         ];
 
         setPhase(PHASES.GREETING);
-        setMessage(initialMessages);
+        setMessages(initialMessages);
 
         const aiText = await getAIResponse(initialMessages);
 
@@ -82,7 +96,7 @@ const useInterviewSession = () =>{
 
         const userMessage = {role:"user", content: transcript.trim()};
 
-        const updatedMessages = [...message,userMessage];
+        const updatedMessages = [...messages,userMessage];
         setMessages(updatedMessages);
         setConversationLog((prev)=>[...prev,{role:"user",text:transcript.trim()}]);
 

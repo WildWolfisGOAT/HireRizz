@@ -54,6 +54,78 @@ const InterviewRoom = ({formData}) => {
             </div>
         );
     }
+
+    return (
+        <div className="interview-room">
+            {/* Header */}
+            <div className="interview-header">
+                <div className="interview-status">
+                    <span className={`status-dot ${phase}`}></span>
+                    <span className="status-text">{getStatusText()}</span>
+                </div>
+                <div className="interview-meta">
+                    <span className="question-count">Q{questionCount}/10</span>
+                    {phase !== PHASES.ENDED && (
+                        <button className="end-btn" onClick={endInterview}>
+                            End Interview
+                        </button>
+                    )}
+                </div>
+            </div>
+            {/* Transcript Area */}
+            <div className="transcript-area">
+                {conversationLog.map((entry, index) => (
+                    <div key={index} className={`message ${entry.role}`}>
+                        <span className="message-label">
+                            {entry.role === "assistant" ? "🎙️ Mr. Stone" : "🧑 You"}
+                        </span>
+                        <p className="message-text">{entry.text}</p>
+                    </div>
+                ))}
+                {/* Show live transcript while user is speaking */}
+                {isListening && (transcript || interimText) && (
+                    <div className="message user live">
+                        <span className="message-label">🧑 You</span>
+                        <p className="message-text">
+                            {transcript}
+                            <span className="interim">{interimText}</span>
+                        </p>
+                    </div>
+                )}
+                <div ref={transcriptEndRef} />
+            </div>
+            {/* Controls */}
+            <div className="interview-controls">
+                {/* Errors */}
+                {(groqError || micError) && (
+                    <div className="error-banner">
+                        {groqError || micError}
+                    </div>
+                )}
+                {phase === PHASES.LISTENING && (
+                    <button
+                        className={`mic-btn ${isListening ? "recording" : ""}`}
+                        onClick={submitAnswer}
+                        disabled={!transcript.trim()}
+                    >
+                        {isListening ? "🛑 Send Answer" : "🎤"}
+                    </button>
+                )}
+                {phase === PHASES.PROCESSING && (
+                    <div className="processing-indicator">
+                        <span className="spinner"></span> Processing...
+                    </div>
+                )}
+                {phase === PHASES.ENDED && (
+                    <div className="ended-message">
+                        <h2>Interview Complete!</h2>
+                        <p>You answered {questionCount} questions.</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+
 }
 
 export default InterviewRoom
