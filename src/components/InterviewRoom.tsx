@@ -77,7 +77,7 @@ const InterviewRoom = ({formData}) => {
                 {conversationLog.map((entry, index) => (
                     <div key={index} className={`message ${entry.role}`}>
                         <span className="message-label">
-                            {entry.role === "assistant" ? "🎙️ Mr. Stone" : "🧑 You"}
+                            {entry.role === "assistant" ? "Mr. Stone" : "You"}
                         </span>
                         <p className="message-text">{entry.text}</p>
                     </div>
@@ -85,7 +85,7 @@ const InterviewRoom = ({formData}) => {
                 {/* Show live transcript while user is speaking */}
                 {isListening && (transcript || interimText) && (
                     <div className="message user live">
-                        <span className="message-label">🧑 You</span>
+                        <span className="message-label">You</span>
                         <p className="message-text">
                             {transcript}
                             <span className="interim">{interimText}</span>
@@ -108,7 +108,7 @@ const InterviewRoom = ({formData}) => {
                         onClick={submitAnswer}
                         disabled={!transcript.trim()}
                     >
-                        {isListening ? "🛑 Send Answer" : "🎤"}
+                        {isListening ? "Stop" : "Mic"}
                     </button>
                 )}
                 {phase === PHASES.PROCESSING && (
