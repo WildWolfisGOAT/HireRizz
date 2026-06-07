@@ -1,5 +1,7 @@
-const buildSystemPrompt = ({jobRole,packageLPA,difficulty,requirements,experience})=>{
-    return(
+import { InterviewFormData } from "../App";
+
+const buildSystemPrompt = ({jobRole,packageLPA,difficulty,requirements,experience}:InterviewFormData)=>{
+    return( 
         `
         You are Mr.Stone an interview trainer.
         Never reveal you are an AI or break character.

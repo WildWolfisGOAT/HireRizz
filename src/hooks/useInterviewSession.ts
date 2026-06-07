@@ -1,8 +1,20 @@
 import useMicrophone from "./useMicrophone";
 import useGroq from "./useGroq";
 import useSpeech from "./useSpeech";
-import buildSystemPrompt from "../utils/PromptBuilder";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { InterviewFormData } from "../App";
+import buildSystemPrompt from "../utils/PromptBuilder";
+
+export interface Message{
+    role : string;
+    text : string;
+}
+
+export interface GroqMessage {
+    role: string;
+    content: string;
+}
+
 
 const PHASES = {
     IDLE : "idle",
@@ -15,10 +27,10 @@ const PHASES = {
 
 const useInterviewSession = () =>{
     const [phase,setPhase] = useState(PHASES.IDLE);
-    const [messages,setMessages] = useState([]);
+    const [messages,setMessages] = useState<GroqMessage[]>([]);
     const [questionCount , setQuestionCount] = useState(0);
     const [currentAIText, setCurrentAIText] = useState("");
-    const [conversationLog, setConversationLog] = useState([]);
+    const [conversationLog, setConversationLog] = useState<Message[]>([]);
 
     const {sendMessages, isLoading, error: groqError} = useGroq();
     const {speak,stopSpeaking,isSpeaking} = useSpeech();
@@ -44,7 +56,7 @@ const useInterviewSession = () =>{
         }
     },[isSpeaking,phase,startListening]);
 
-    const getAIResponse = useCallback(async(updatedMessages) => {
+    const getAIResponse = useCallback(async(updatedMessages:GroqMessage[]) => {
         const aiText = await sendMessages(updatedMessages);
 
         if(!aiText) return null;
@@ -60,7 +72,7 @@ const useInterviewSession = () =>{
         return aiText;
     },[sendMessages]);
 
-    const startInterview = useCallback(async(formData)=>{
+    const startInterview = useCallback(async(formData:InterviewFormData)=>{
 
         if (hasStartedRef.current) return;  
         hasStartedRef.current = true;

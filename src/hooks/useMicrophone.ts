@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
 const useMicrophone = () => {
-    const [isListening, setIsListening] = useState(false);
-    const [transcript, setTranscript] = useState("");
-    const [interimText, setInterimText] = useState("");
-    const [error, setError] = useState(null);
+    const [isListening, setIsListening] = useState<boolean>(false);
+    const [transcript, setTranscript] = useState<string>("");
+    const [interimText, setInterimText] = useState<string>("");
+    const [error, setError] = useState<string | null>(null);
     const isSupported = !!SpeechRecognition;
-    const recognitionRef = useRef(null);
-    const manualStopRef = useRef(false);
+    const recognitionRef = useRef<any>(null);
+    const manualStopRef = useRef<boolean>(false);
 
 
     useEffect(()=>{
@@ -20,7 +20,7 @@ const useMicrophone = () => {
         recognition.interimResults = true;
         recognition.lang = "en-US";
 
-        recognition.onresult = (event)=>{
+        recognition.onresult = (event: any)=>{
             let finalText = "";
             let currentInterimText = "";
 
@@ -39,7 +39,7 @@ const useMicrophone = () => {
             setInterimText(currentInterimText);
         };
 
-        recognition.onerror = (event) => {
+        recognition.onerror = (event: any) => {
             if(event.error === "no-speech") return;
             if(event.error === "not-allowed"){
                 setError("Microphone Permission is denied. Please allow mic access.");
@@ -83,7 +83,7 @@ const useMicrophone = () => {
         try{
             recognitionRef.current.start();
             setIsListening(true);
-        }catch (e){
+        }catch (e: any){
             if(e.name !== "InvalidStateError"){
                 setError(e.message);
             }

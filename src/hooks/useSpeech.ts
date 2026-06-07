@@ -1,7 +1,7 @@
 import { useState } from "react"
 const useSpeech = () => {
-    const [isSpeaking,setIsSpeaking] = useState(false);
-    const speak = (text)=>{
+    const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+    const speak = (text: string) => {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 0.95;
         utterance.pitch = 0.9;
